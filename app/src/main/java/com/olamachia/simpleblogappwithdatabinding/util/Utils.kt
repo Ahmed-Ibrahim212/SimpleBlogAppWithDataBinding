@@ -1,4 +1,11 @@
 package com.olamachia.simpleblogappwithdatabinding.util
 
-class Utils {
+import android.view.View
+import android.widget.ProgressBar
+
+object Utils {
+
+    fun showProgressBar(progressBar: ProgressBar, isDisplayed: Boolean) {
+        progressBar.visibility = if (isDisplayed) View.VISIBLE else View.GONE
+    }
 }

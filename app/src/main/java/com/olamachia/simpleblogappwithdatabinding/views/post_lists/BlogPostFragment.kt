@@ -1,59 +1,125 @@
-package com.olamachia.simpleblogappwithdatabinding
+package com.olamachia.simpleblogappwithdatabinding.views.post_lists
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.olamachia.simpleblogappwithdatabinding.R
+import com.olamachia.simpleblogappwithdatabinding.adapter.BlogPostAdapter
+import com.olamachia.simpleblogappwithdatabinding.adapter.RecyclerClickListeneer
+import com.olamachia.simpleblogappwithdatabinding.cacheo.PostCacheEntity
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.olamachia.simpleblogappwithdatabinding.databinding.FragmentBlogPostBinding
+import com.olamachia.simpleblogappwithdatabinding.model.domain.Post
+import com.olamachia.simpleblogappwithdatabinding.util.DataState
+import com.olamachia.simpleblogappwithdatabinding.util.Utils
+import com.olamachia.simpleblogappwithdatabinding.viewmodels.BlogPostsViewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class BlogPostFragment : Fragment(), RecyclerClickListeneer {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [BlogPostFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class BlogPostFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private val posts = ArrayList<Post>()
+    private val blogPostViewModel: BlogPostsViewModel by viewModel()
+    private lateinit var postsAdapter: BlogPostAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    //binding the fragment with the layout xml
+    private var _binding: FragmentBlogPostBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_blog_post, container, false)
+        _binding = FragmentBlogPostBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment BlogPostFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            BlogPostFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        var recyclerView = binding.postsRecyclerView
+
+
+
+        subscribeObservers()
+
+        recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        postsAdapter = BlogPostAdapter(requireActivity(), posts, this)
+        recyclerView.adapter = postsAdapter
+
+
+        // SearchPosts
+        binding.postSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let { blogPostViewModel.searchPosts(it) }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { blogPostViewModel.searchPosts(it) }
+                return false
+            }
+        })
+
+    }
+
+
+
+    //managing the network state through progress bar
+    private fun subscribeObservers() {
+        var postProgressBar = binding.postProgressBar
+        blogPostViewModel.dataState.observe(this, { result ->
+            when (result.status) {
+                DataState.Status.SUCCESS -> {
+                    Utils.showProgressBar(postProgressBar, false)
+                    result.data?.let { list ->
+                        Log.d("Post", "subscribeObservers: $list")
+                        postsAdapter.updateData(list)
+
+                    }
+                }
+                DataState.Status.ERROR -> {
+                    Utils.showProgressBar(postProgressBar, false)
+                    result.message?.let {
+                        showError(it)
+                    }
+                }
+                DataState.Status.LOADING -> {
+                    Utils.showProgressBar(postProgressBar, true)
                 }
             }
+        })
     }
+
+    private fun showError(msg: String) {
+        if (msg != null) {
+            binding.text.text = msg
+        }
+        binding.text.text = getString(R.string.error_text)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onClick(position: Int, List: ArrayList<Post>) {
+        var userId = List[position].userId
+        var postId = List[position].postId
+        var postTitle = List[position].title
+        var postBody = List[position].body
+
+        var postCacheEntity = PostCacheEntity(postId,userId,postTitle, postBody)
+
+
+        val action = BlogPostFragmentDirections.actionBlogPostFragmentToCommentFragment(postCacheEntity)
+        findNavController().navigate(action)
+    }
+
 }
+
+

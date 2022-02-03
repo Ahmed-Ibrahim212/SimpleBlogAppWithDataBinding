@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">SimpleBlogAppWithDataBinding</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="search_posts">Search Posts</string>
+    <string name="comments">Comments</string>
+    <string name="add_comment">Add Comment</string>
+    <string name="error_text">Oops! 😰 Unable to connect to network. Make sure your internet is turned on, then restart your app</string>
+    <string name="add_post">Add Post</string>
 </resources>

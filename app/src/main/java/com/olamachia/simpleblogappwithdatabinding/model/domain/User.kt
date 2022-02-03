@@ -1,4 +1,8 @@
 package com.olamachia.simpleblogappwithdatabinding.model.domain
 
-class User {
-}
+data class User(
+    val id: String,
+    val name: String,
+    val username: String,
+    val email: String
+)

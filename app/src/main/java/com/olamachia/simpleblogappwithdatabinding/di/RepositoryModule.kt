@@ -1,10 +1,10 @@
-package com.olamachia.simpleblogapp.di
+package com.olamachia.simpleblogappwithdatabinding.di
 
-import com.olamachia.simpleblogapp.cache.CommentCacheMapper
-import com.olamachia.simpleblogapp.cache.PostCacheMapper
-import com.olamachia.simpleblogapp.model.MainRepository
-import com.olamachia.simpleblogapp.model.remote.CommentNetworkMapper
-import com.olamachia.simpleblogapp.model.remote.PostNetworkMapper
+import com.olamachia.simpleblogappwithdatabinding.cacheo.CommentCacheMapper
+import com.olamachia.simpleblogappwithdatabinding.cacheo.PostCacheMapper
+import com.olamachia.simpleblogappwithdatabinding.model.MainRepository
+import com.olamachia.simpleblogappwithdatabinding.model.remote.CommentNetworkMapper
+import com.olamachia.simpleblogappwithdatabinding.model.remote.PostNetworkMapper
 import org.koin.dsl.module
 
 

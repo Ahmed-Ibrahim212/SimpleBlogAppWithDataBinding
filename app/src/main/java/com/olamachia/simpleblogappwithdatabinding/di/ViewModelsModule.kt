@@ -1,9 +1,10 @@
-package com.olamachia.simpleblogapp.di
+package com.olamachia.simpleblogappwithdatabinding.di
 
-import com.olamachia.simpleblogapp.viewmodels.BlogPostsViewModel
-import com.olamachia.simpleblogapp.viewmodels.PostDetailViewModel
+import com.olamachia.simpleblogappwithdatabinding.viewmodels.BlogPostsViewModel
+import com.olamachia.simpleblogappwithdatabinding.viewmodels.PostDetailViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+
 
 val viewModelsModule = module {
     viewModel { BlogPostsViewModel(get()) }

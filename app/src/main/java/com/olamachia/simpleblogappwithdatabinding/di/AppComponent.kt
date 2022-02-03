@@ -1,6 +1,6 @@
-package com.olamachia.simpleblogapp.di
+package com.olamachia.simpleblogappwithdatabinding.di
 
-import networkModule
+
 
 val appComponent = listOf(
     cacheModule,
